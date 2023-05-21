@@ -180,4 +180,11 @@ const sendMail = async(req,res)=>{
         }
       });
 }
-module.exports = {signup,signin,search,SignOut,getall,sendMail};
+const getinfo = async(req,res)=>{
+    try{
+       res.send(req.user);
+    }catch(err){
+        console.log(err);
+    }
+}
+module.exports = {signup,signin,search,SignOut,getall,sendMail,getinfo};

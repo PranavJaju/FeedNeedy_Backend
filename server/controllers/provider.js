@@ -128,8 +128,15 @@ const SignOut = async(req,res)=>{
         console.log("This is to be done");
 
     } catch (error) {
-        
+        console.log(err);
+    }
+}
+const getinfo = async(req,res)=>{
+    try{
+       res.send(req.user);
+    }catch(err){
+        console.log(err);
     }
 }
 
-module.exports = {SignUp,SignIn,DonateFood,SeeItems,Search,UpdateFood,DeleteFood,expiry,ViewOthers};
+module.exports = {SignUp,SignIn,DonateFood,SeeItems,Search,UpdateFood,DeleteFood,expiry,ViewOthers,getinfo};
