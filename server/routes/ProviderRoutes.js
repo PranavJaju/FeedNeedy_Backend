@@ -2,7 +2,7 @@ const express = require("express");
 const Auth = require("../middlewares/ShopAuth");
 const P_Routes = express.Router();
 const {SignUp, SignIn , DonateFood,SeeItems,Search,UpdateFood,DeleteFood,expiry,ViewOthers, getinfo} = require("../controllers/provider");
-P_Routes.post("/RegisterD",SignUp);
+P_Routes.post("/registerD",SignUp);
 P_Routes.post("/loginD",SignIn);
 P_Routes.post("/AddItem",Auth,DonateFood);
 P_Routes.get("/SeeItems",Auth,SeeItems);

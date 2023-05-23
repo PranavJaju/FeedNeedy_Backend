@@ -2,49 +2,63 @@ const Collector = require("../models/collector");
 const Food = require("../models/food");
 const Provider = require("../models/provider");
 const nodemailer = require("nodemailer");
-const signup = async(req,res)=>{
-    try{
-        const NewCollector = new Collector({
-            name: req.body.name,
-            email: req.body.email,
-            mobile: req.body.mobile,
-            password: req.body.password
-            
-        })
-        const CollectorCreated = await NewCollector.save();
-       const token = await CollectorCreated.generateAuthToken();
-       console.log(token);
-       res.cookie('jwt',token,{httpOnly:true})
-        res.send(CollectorCreated);
-    }
-    catch(err){
-        res.send(err);
-    }
-}
-const signin = async(req,res)=>{
-    try{const {email,password} = req.body;
-    if(!email || !password){
-        res.send("Enter all the fields");
-    }
-    else{
-        const emailfind = await Collector.findOne({email});
-        if(emailfind == null){
-            res.send("User Doesn't Exist");
-        }else{
-        if(password===emailfind.password){
-            const token = await emailfind.generateAuthToken();
-             console.log(token);
-             res.cookie('jwt',token,{httpOnly:true})
-            res.send(emailfind);
-        }else{
-            res.send("Invalid Details");
+
+const signup = async (req, res) => {
+    try {
+        const { name, email, mobile, password } = req.body;
+
+        if (!name || !email || !mobile || !password) {
+            return res.status(400).json({ error: "Enter all fields" });
         }
+
+        const emailExists = await Collector.findOne({ email });
+        if (emailExists) {
+            return res.status(400).json({ error: "Email already exists" });
+        }
+
+        const NewCollector = new Collector({
+            name,
+            email,
+            mobile,
+            password,
+        });
+
+        const CollectorCreated = await NewCollector.save();
+        const token = await CollectorCreated.generateAuthToken();
+        console.log(token);
+        res.cookie("jwt", token, { httpOnly: true });
+        res.json(CollectorCreated);
+    } catch (err) {
+        res.status(500).json({ error: "An error occurred during signup. Please try again." });
     }
-    }}
-    catch(err){
-        res.send(err);
+};
+
+const signin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: "Enter all the fields" });
+        }
+
+        const user = await Collector.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ error: "User doesn't exist" });
+        }
+
+        if (password === user.password) {
+            const token = await user.generateAuthToken();
+            console.log(token);
+            res.cookie("jwt", token, { httpOnly: true });
+            res.send(user);
+        } else {
+            return res.status(400).json({ error: "Invalid details" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: "An error occurred during signin. Please try again." });
     }
-}
+};
+
 const search = async(req,res)=>{
     try {
         const name = req.params.name;
@@ -94,9 +108,10 @@ const search = async(req,res)=>{
         res.send(error);
     }
 }
-const SignOut = async(req,res)=>{
+const SignOut = async(req,res,next)=>{
     try {
         res.clearCookie('jwt');
+        next()
         console.log("This is to be done");
 
     } catch (error) {
@@ -164,10 +179,10 @@ const sendMail = async(req,res)=>{
         from: "mihirdesh23@gmail.com", // Replace with your Gmail email address
         to: `${req.params.email}`, // Replace with recipient email address
         subject: "Welcome to FeedNeedy", // Replace with subject of your email
-        html: `<h4>Hello ${req.params.name}</h4><p>We would like to inform you that we have got a request for your food ${req.params.food}.
-        The Details of the Requestor is as follows: 
-        Name : ${req.user.name}
-        Mobile : ${req.user.mobile}
+        html: `<h4>Hello ${req.params.name}</h4><br><p>We would like to inform you that we have got a request for your food ${req.params.food}.
+        The Details of the Requestor is as follows: <br>
+        Name : ${req.user.name}<br>
+        Mobile : ${req.user.mobile}<br>
         Email : ${req.user.email}</p>`
       };
       transporter.sendMail(mailOptions, (error, info) => {
