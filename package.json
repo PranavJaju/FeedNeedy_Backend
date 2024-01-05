@@ -9,7 +9,7 @@
     "mongodb": "^5.5.0",
     "mongoose": "^6.10.0",
     "nodemailer": "^6.9.2",
-    "nodemon": "^2.0.20",
+    "nodemon": "^3.0.2",
     "validator": "^13.9.0"
   },
   "name": "pbl_backend",
