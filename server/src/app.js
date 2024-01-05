@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express();
+const dotenv = require("dotenv")
+dotenv.config({path:"../../.env"})
 const cookieParser = require('cookie-parser')
 const cors = require("cors")
 const port = process.env.PORT || 5000;
-const dotenv = require("dotenv")
-dotenv.config()
+
 require("../db/connection");
 const PRoutes = require("../routes/ProviderRoutes");
 const CRoutes = require("../routes/CollectorRoutes");
